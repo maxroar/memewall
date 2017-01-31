@@ -33,7 +33,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'apps.login_reg',
-
+    'apps.memes',
+    'stdimage',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

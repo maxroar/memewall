@@ -20,7 +20,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^', include('apps.login_reg.urls', namespace='login_ns')),
-    # url(r'^memes/', include('apps.memes.urls', namespace='memes_ns')),
+    url(r'^memes/', include('apps.memes.urls', namespace='memes_ns')),
     # url(r'^', include('apps.comments.urls', namespace='comments_ns')),
     # url(r'^memes/', include('apps.quick_comment.urls', namespace='quick_comment_ns')),
     # url(r'^admin/', admin.site.urls),

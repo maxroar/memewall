@@ -1,16 +1,22 @@
 from __future__ import unicode_literals
 from django.db import models
 import bcrypt
+import re
+# from stdimage.models import StdImageField
+from stdimage.models import StdImageField
 
 # Create your models here.
 class UserManager(models.Manager):
     def validate_reg(self, postData):
+        REGEX_PASS = re.compile(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,20}$')
         # list to hold error messages
         errors = []
         if not len(postData['username']) > 2:
             errors.append('User Name must be at least 3 characters.')
-        if not len(postData['pass1']) > 7:
-            errors.append('Password must be at least 8 characters.')
+        if not REGEX_PASS.match(postData['pass1']):
+            errors.append('Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character.')
+        if not postData['profile_pic']:
+            errors.append('Please upload a profile image.')
         if not postData['pass1'] == postData['pass2']:
             errors.append('Passwords must match.')
         if not self.check_username(postData):
@@ -24,7 +30,9 @@ class UserManager(models.Manager):
         return True
 
     def create_user(self, postData):
-        User.objects.create(first_name=postData['first_name'], username=postData['username'], password=bcrypt.hashpw(postData['pass1'].encode(), bcrypt.gensalt()))
+        User.objects.create(
+        username=postData['username'], password=bcrypt.hashpw(postData['pass1'].encode(), bcrypt.gensalt()),
+        profile_pic=postData['profile_pic'])
 
     def login(self, postData):
         user_data = User.objects.filter(username=postData['username']).first()
@@ -48,7 +56,11 @@ class UserManager(models.Manager):
 class User(models.Model):
     username = models.CharField(max_length=50)
     password = models.CharField(max_length=55)
-    profile_pic = models.ImageField(upload_to='images', null=True, blank=True, height_field='height_field', width_field='width_field')
+    profile_pic = StdImageField(upload_to='images/', null=True, blank=True, variations={
+        'large': (400, 400),
+        'thumbnail': (100, 100, True),
+        'medium': (250, 250),
+    })
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = UserManager()

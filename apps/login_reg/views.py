@@ -31,7 +31,7 @@ def login(request):
         messages.error(request, 'The username or password is incorrect.')
         return redirect('login_ns:index')
     request.session['user_id'] = User.objects.set_session(request.POST)
-    return redirect(reverse('items_ns:index'))
+    return redirect(reverse('memes_ns:index'))
 
 
 def logout(request):

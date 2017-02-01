@@ -30,10 +30,11 @@ class UserManager(models.Manager):
             return False
         return True
 
-    def create_user(self, postData):
+    def create_user(self, postData, fileData):
+        print fileData
         User.objects.create(
         username=postData['username'], password=bcrypt.hashpw(postData['pass1'].encode(), bcrypt.gensalt()),
-        profile_pic=postData['profile_pic'])
+        profile_pic=fileData['profile_pic'])
 
     def login(self, postData):
         user_data = User.objects.filter(username=postData['username']).first()

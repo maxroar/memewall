@@ -7,15 +7,16 @@ from stdimage.models import StdImageField
 
 # Create your models here.
 class UserManager(models.Manager):
-    def validate_reg(self, postData):
+    def validate_reg(self, postData, imgFile):
         REGEX_PASS = re.compile(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,20}$')
+        print imgFile
         # list to hold error messages
         errors = []
         if not len(postData['username']) > 2:
             errors.append('User Name must be at least 3 characters.')
         if not REGEX_PASS.match(postData['pass1']):
             errors.append('Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character.')
-        if not postData['profile_pic']:
+        if not imgFile:
             errors.append('Please upload a profile image.')
         if not postData['pass1'] == postData['pass2']:
             errors.append('Passwords must match.')

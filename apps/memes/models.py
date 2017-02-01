@@ -5,8 +5,8 @@ from stdimage.models import StdImageField
 
 # Create your models here.
 class MemeManager(models.Manager):
-    def index(self, session_id):
-        User.objects.get(id=session_id)
+    # def index(self, session_id):
+    #     User.objects.get(id=session_id)
     # def create_meme(self, postData, user_id):
     #     user_name=User.objects.get(id=user_id)
     #     self.create(name=postData['content'], user=User.objects.get(id=user_id), added_by=user_name.first_name)
@@ -17,19 +17,19 @@ class MemeManager(models.Manager):
     #     meme_obj = self.get(id=meme_id)
     #     meme_obj.wishlist.add(user_id)
     #
-    # def get_all_data(self, user_id):
-    #     user_data = User.objects.all()
-    #     memes_data = self.all()
-    #     current_user = User.objects.get_user_data_from_session(user_id)
-    #     other_memes = self.get_other_memes(user_id)
-    #     all_data = {
-    #         'users': user_data,
-    #         'memes': memes_data,
-    #         'current_user': current_user,
-    #         'other_memes': other_memes
-    #     }
-    #     print all_data
-    #     return all_data
+    def get_all_data(self, user_id):
+        # user_data = User.objects.all()
+        # memes_data = self.all()
+        current_user = User.objects.get_user_data_from_session(user_id)
+        # other_memes = self.get_other_memes(user_id)
+        all_data = {
+            # 'users': user_data,
+            # 'memes': memes_data,
+            'current_user': current_user,
+            # 'other_memes': other_memes
+        }
+        print all_data
+        return all_data
     #
     # def get_wishlist(self, user_id):
     #     return self.filter(wishlist__id=user_id)

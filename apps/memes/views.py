@@ -4,12 +4,13 @@ from .models import Meme
 # Create your views here.
 def index(request):
     print(request.session['user_id'])
-    # all_data = Meme.objects.get_all_data(request.session['user_id'])
-    # context = {
-    #     'data': all_data
-    # }
-    # print(all_data['wishlist'])
-    return render(request, 'memes/index.html')
+    print request.FILES
+    all_data = Meme.objects.get_all_data(request.session['user_id'])
+    context = {
+        'data': all_data
+    }
+    print all_data['current_user'].username
+    return render(request, 'memes/index.html', context)
 
 # def display_add_meme(request):
 #     all_data = Meme.objects.get_all_data(request.session['user_id'])

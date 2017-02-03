@@ -5,66 +5,91 @@ from stdimage.models import StdImageField
 
 # Create your models here.
 class MemeManager(models.Manager):
-    # def index(self, session_id):
-    #     User.objects.get(id=session_id)
-    # def create_meme(self, postData, user_id):
-    #     user_name=User.objects.get(id=user_id)
-    #     self.create(name=postData['content'], user=User.objects.get(id=user_id), added_by=user_name.first_name)
-    #     meme_id = self.filter().latest('id')
-    #     self.add_to_wishlist(meme_id.id, user_id)
-    #
-    # def add_to_wishlist(self, meme_id, user_id):
-    #     meme_obj = self.get(id=meme_id)
-    #     meme_obj.wishlist.add(user_id)
-    #
+
+    def verify_post(self, postData, imgFile):
+        errors = []
+        if not len(postData['post_title']) > 0:
+            errors.append('Please include a title.')
+        if not imgFile:
+            errors.append('Please upload an image.')
+        return errors
+
     def get_all_data(self, user_id):
         # user_data = User.objects.all()
-        # memes_data = self.all()
+        memes_data = Meme.objects.order_by('-created_at')
         current_user = User.objects.get_user_data_from_session(user_id)
+        comments = Comment.objects.all()
         # other_memes = self.get_other_memes(user_id)
         all_data = {
             # 'users': user_data,
-            # 'memes': memes_data,
+            'memes': memes_data,
             'current_user': current_user,
-            # 'other_memes': other_memes
+            'comments': comments
         }
-        print all_data
+        print current_user
         return all_data
-    #
-    # def get_wishlist(self, user_id):
-    #     return self.filter(wishlist__id=user_id)
-    #
-    # def get_other_memes(self, user_id):
-    #     return self.all().exclude(wishlist__id=user_id)
-    #
-    # def remove_from_wl(self, meme_id, user_id):
-    #     meme_obj = self.get(id=meme_id)
-    #     user_obj = User.objects.get(id=user_id)
-    #     meme_obj.wishlist.remove(user_obj)
-    #
-    # def get_meme_wishers(self, meme_id):
-    #     users = User.objects.filter(in_wishlist=meme_id)
-    #     print users
-    #     return users
-    #
-    # def get_meme_data(self, meme_id):
-    #     meme_data = self.get(id=meme_id)
-    #     print meme_data
-    #     return meme_data
-    #
-    # def is_user(self, meme_id, user_id):
-    #     is_true = self.filter(id=meme_id,user=User.objects.get(id=user_id))
-    #     return is_true
-    #
-    # def update_meme(self, postData, meme_id):
-    #     content=postData['content']
-    #     self.filter(id=meme_id).update(content=content)
-    #
-    # def delete_meme(self, postData, meme_id):
-    #     self.filter(id=meme_id).delete()
-    #     # one time user
-    #     self.objects.all().delete()
-    #     User.objects.all().delete()
+
+    def add_post(self, postData, imgFile, user_id):
+        user = User.objects.get(id=user_id)
+        self.create(
+            title=postData['post_title'],
+            meme=imgFile['meme_post'],
+            category=postData['category'],
+            added_by=user
+        )
+
+    def get_user_posts(self, user_id):
+        user = User.objects.get(id=user_id)
+        memes = self.filter(added_by=user).order_by('-created_at')
+        return memes
+
+    def like_post(self, meme_id, user_id):
+        user = User.objects.get(id=user_id)
+        meme = self.get(id=meme_id)
+        if not user in meme.likes.all():
+            meme.likes.add(user)
+            return 0
+        meme.likes.remove(user)
+
+    def dislike_post(self, meme_id, user_id):
+        user = User.objects.get(id=user_id)
+        meme = self.get(id=meme_id)
+        if not user in meme.dislikes.all():
+            meme.dislikes.add(user)
+            return 0
+        meme.dislikes.remove(user)
+
+
+class CommentManager(models.Manager):
+
+    def verify_comment(self, postData, imgFile):
+        errors = []
+        if not len(postData['comment_text']) > 0 and not imgFile:
+            errors.append('Please include either an image or a comment.')
+        return errors
+
+    def add_comment(self, postData, imgFile, user_id, meme_id):
+        user = User.objects.get(id=user_id)
+        meme = Meme.objects.get(id=meme_id)
+        if not imgFile:
+            self.create(
+                comment_text=postData['comment_text'],
+                added_by=user,
+                meme_post=meme
+            )
+        elif len(postData['comment_text']) == 0:
+            self.create(
+                comment_pic=imgFile['comment_pic'],
+                added_by=user,
+                meme_post=meme
+            )
+        else:
+            self.create(
+                comment_text=postData['comment_text'],
+                comment_pic=imgFile['comment_pic'],
+                added_by=user,
+                meme_post=meme
+            )
 
 
 class Meme(models.Model):
@@ -78,12 +103,28 @@ class Meme(models.Model):
         'large': (400, 400),
         'thumbnail': (100, 100, True),
         'medium': (250, 250),
+        'icon': (40, 40, True)
     })
     title = models.CharField(max_length=200)
     added_by = models.ForeignKey(User, related_name='added_memes')
-    categories = models.CharField(max_length=1, choices=choices)
+    category = models.CharField(max_length=1, choices=choices)
     likes = models.ManyToManyField(User, related_name='liked_memes', null=True)
     dislikes = models.ManyToManyField(User, related_name='disliked_memes', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     objects = MemeManager()
+
+
+class Comment(models.Model):
+    comment_pic = StdImageField(upload_to='images/', null=True, blank=True, variations={
+        'large': (400, 400),
+        'thumbnail': (100, 100, True),
+        'medium': (250, 250),
+        'icon': (40, 40, True)
+    })
+    comment_text = models.TextField(null=True)
+    meme_post = models.ForeignKey(Meme, related_name='meme_comments')
+    added_by = models.ForeignKey(User, related_name='added_comments')
+    likes = models.ManyToManyField(User, related_name='liked_comments', null=True)
+    dislikes = models.ManyToManyField(User, related_name='disliked_comments', null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    objects = CommentManager()

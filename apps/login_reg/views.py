@@ -34,6 +34,12 @@ def login(request):
     return redirect(reverse('memes_ns:index'))
 
 
+
+    # make a method to get user_data from session
+    # make a method to get get a join query of user posts + user comments and sort by descending chronological order w/ datetime
+    # pass each in context as individual keys
+
+
 def logout(request):
     request.session.flush()
     return redirect('/')

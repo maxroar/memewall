@@ -10,9 +10,11 @@
 <body>
     <div class="row">
       <div class="errors col-xs-6 col-sm-4 col-md-3 col-md-offset-1">
-          {% if messages %} {% for msg in messages %}
-          <p>{{msg}}</p>
-          {% endfor %} {% endif %}
+          {% if messages %}
+            {% for msg in messages %}
+              <p>{{msg}}</p>
+            {% endfor %}
+          {% endif %}
       </div>
     </div>
     <div class="row">
@@ -25,7 +27,7 @@
               <input type="password" name="pass1"
                   value="" class="form-control">
               <label for="pass2">Confirm Password: </label><input type="password" name="pass2" value="" class="form-control">
-              <label for="profile_pic">Profile Pic: </label><input type="file" name="profile_pic" value="" placeholder="Please choose an image that is 128x128" class=""><br>
+              <label for="profile_pic">Profile Pic: </label><input type="file" name="profile_pic" value="" class=""><br>
               <input type="submit" name="" value="Register" class="btn btn-primary">
           </form>
       </div>

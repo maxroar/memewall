@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" charset="utf-8"></script>
+
+    <script src="https://use.fontawesome.com/a94c98b4be.js"></script>
   </head>
   <body>
     <div class="container">
@@ -17,15 +19,10 @@
         {% endif %}
       </div>
       <div class="row">
-        <div class="col-xs-10">
+        <div class="col-xs-10 col-sm-7 col-sm-offset-3 col-md-4 col-md-offset-6 col-lg-2 col-lg-offset-8">
+          <h2><img src="{{data.current_user.profile_pic.thumbnail.url}}" alt="">  {{data.current_user.username}}</h2>
         </div>
-        <div class="col-xs-1">
-          <form class="" action="{% url 'login_ns:index' %}" method="post">
-            {% csrf_token %}
-            <input type="submit" name="" value="Home" class='btn btn-primary'>
-          </form>
-        </div>
-        <div class="col-xs-1">
+        <div class="col-xs-1 col-xs-offset-1">
           <form class="" action="{% url 'login_ns:logout' %}" method="post">
             {% csrf_token %}
             <input type="submit" name="" value="Log Out" class='btn btn-danger'>
@@ -34,13 +31,25 @@
       </div>
       <div class="row">
         <div class="col-xs-12">
-          <form class="" action="{% url 'memes_ns:create_meme'  %}" method="post">
+          <form class="" action="{% url 'memes_ns:add_post' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            New Item: <input type="text" name="content" value="">
-            <input type="submit" name="" value="Add Item" class='btn btn-primary'>
+            <input type="file" name="meme_post" value="">
+            <label for="post_title">Title:</label>
+            <input type="text" name="post_title" value="">
+            <label for="category">Category:</label>
+            <select class="" name="category">
+              <option value="f">Funny</option>
+              <option value="p">Political</option>
+              <option value="r">Reality</option>
+
+            </select>
+            <input type="submit" name="" value="Post">
           </form>
         </div>
       </div>
+
+
+
     </div>
   </body>
 </html>

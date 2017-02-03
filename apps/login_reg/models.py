@@ -62,6 +62,7 @@ class User(models.Model):
         'large': (400, 400),
         'thumbnail': (100, 100, True),
         'medium': (250, 250),
+        'icon': (40, 40, True)
     })
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" charset="utf-8"></script>
+
+    <script src="https://use.fontawesome.com/a94c98b4be.js"></script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-xs-10 col-sm-7 col-sm-offset-3 col-md-4 col-md-offset-6 col-lg-2 col-lg-offset-8">
+        <h2><img src="{{data.current_user.profile_pic.thumbnail.url}}" alt="">  {{data.current_user.username}}</h2>
+      </div>
+      <div class="col-xs-1">
+        <a href="{% url 'memes_ns:new_post' %}" class="btn btn-primary">New Post</a>
+      </div>
+      <div class="col-xs-1">
+        <form class="" action="{% url 'login_ns:logout' %}" method="post">
+          {% csrf_token %}
+          <input type="submit" name="" value="Log Out" class='btn btn-danger'>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6 col-xs-offset-3">
+        {% for meme in user_posts %}
+          <h3>{{meme.title}}</h3>
+          <img src="{{meme.meme.large.url}}" alt="">
+          <p>added by <a href="{% url 'memes_ns:display_profile' meme.added_by.id %}">@{{meme.added_by.username}}</a> on {{meme.created_at}}</p>
+          <div class="row">
+            <div class="col-xs-6">
+              <a href="{% url 'memes_ns:like_post' meme.id %}" class="btn btn-primary">
+                {% if data.current_user in meme.likes.all %}
+                <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                {% else %}
+                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                {% endif %}
+              </a>
+              <a href="{% url 'memes_ns:dislike_post' meme.id %}" class="btn btn-danger">
+                {% if data.current_user in meme.dislikes.all %}
+                <i class="fa fa-thumbs-down" aria-hidden="true"></i>
+                {% else %}
+                <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                {% endif %}
+              </a>
+            </div>
+            <div class="col-xs-6">
+              <p>Likes: {{meme.likes.count}}</p>
+              <p>Dislikes: {{meme.dislikes.count}}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <form class="" action="{% url 'memes_ns:add_comment' meme.id %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="comment_text" value="">
+                <input type="file" name="comment_pic" value="">
+                <input type="submit" name="" value="Post Comment">
+              </form>
+            </div>
+          </div>
+          {% for comment in data.comments %}
+            {% if comment.meme_post.id == meme.id %}
+              <div class="row">
+                <div class="col-xs-2">
+                  <img src="{{comment.added_by.profile_pic.thumbnail.url}}" alt="">
+                </div>
+                <div class="col-xs-10">
+                  <p>added by <a href="{% url 'memes_ns:display_profile' comment.added_by.id %}">@{{comment.added_by.username}}</a> on {{comment.created_at}}</p>
+                  {% if comment.comment_text %}
+                    <p>{{comment.comment_text}}</p>
+                  {% endif %}
+                  {% if comment.comment_pic %}
+                    <img src="{{comment.comment_pic.medium.url}}" alt="">
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </body>
+</html>

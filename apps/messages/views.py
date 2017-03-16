@@ -3,5 +3,5 @@ from django.contrib import messages
 from .models import Message, Thread
 from django.core.urlresolvers import reverse
 
-def display_messages(request, user_id):
+def display_threads(request, user_id):
     pass

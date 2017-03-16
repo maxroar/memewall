@@ -9,7 +9,7 @@ from stdimage.models import StdImageField
 class UserManager(models.Manager):
     def validate_reg(self, postData, imgFile):
         REGEX_PASS = re.compile(r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,20}$')
-        print imgFile
+        print (imgFile)
         # list to hold error messages
         errors = []
         if not len(postData['username']) > 2:
@@ -31,7 +31,7 @@ class UserManager(models.Manager):
         return True
 
     def create_user(self, postData, fileData):
-        print fileData
+        print (fileData)
         User.objects.create(
         username=postData['username'], password=bcrypt.hashpw(postData['pass1'].encode(), bcrypt.gensalt()),
         profile_pic=fileData['profile_pic'])

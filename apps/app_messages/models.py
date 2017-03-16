@@ -8,8 +8,19 @@ class MessageManager(models.Manager):
         Thread.create()
         return Thread.objects.get().latest('id')
 
-    def create_message(self, sender, receiver, thread_id):
-        pass
+    def create_message(self, postData, sender, receiver, thread_id):
+        if not thread_id:
+            new_thread = create_thread()
+            thread_id = new_thread.id
+        Message.create(
+            content=postData['content'],
+            sent_by=sender,
+            received_by=receiver,
+            thread_id=thread_id,
+            viewed=False)
+
+    def get_threads(self, user):
+        user_threads = self.filter()
 
 
 

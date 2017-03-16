@@ -26,7 +26,7 @@ class MemeManager(models.Manager):
             'current_user': current_user,
             'comments': comments
         }
-        print current_user
+        print (current_user)
         return all_data
 
     def add_post(self, postData, imgFile, user_id):
